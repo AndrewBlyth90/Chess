@@ -25,7 +25,7 @@ public class Bishop extends Piece {
      */
 
     public Bishop(final Alliance pieceAlliance, final int piecePosition) {
-        super(pieceAlliance, piecePosition);
+        super(PieceType.BISHOP, piecePosition, pieceAlliance );
     }
 
     /**
@@ -45,7 +45,7 @@ public class Bishop extends Piece {
             while (BoardUtils.isValidTileCoordinate(candidateDestinationCoordinate)) { //Checks if target destination is legal
 
                 if (isFirstColumnExclusion(candidateDestinationCoordinate, candidateCoordinateOffset) || //checks if piece is at edge of board
-                        isEigthColumnExclusion(candidateDestinationCoordinate, candidateCoordinateOffset)) {
+                        isEighthColumnExclusion(candidateDestinationCoordinate, candidateCoordinateOffset)) {
                     break;
                 }
                 candidateDestinationCoordinate += candidateCoordinateOffset;
@@ -67,16 +67,35 @@ public class Bishop extends Piece {
         return ImmutableList.copyOf(legalMoves);
     }
 
+    /**
+     * toString method that returns bishop piece type
+     * @return
+     */
+
     @Override
     public String toString(){
          return PieceType.BISHOP.toString();
     }
 
+
+    /**
+     * Checks if Bishop object is on first column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
     private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -9 || candidateOffset == 7);
     }
 
-    private static boolean isEigthColumnExclusion(final int currentPosition, final int candidateOffset) {
+    /**
+     * Checks if Bishop obeject is on the eighth column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
+
+    private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == -7 || candidateOffset == 9);
     }
 }

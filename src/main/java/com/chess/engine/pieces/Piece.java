@@ -8,11 +8,22 @@ import java.util.Collection;
 
 public abstract class Piece {
 
+    protected final PieceType pieceType;
     protected final int piecePosition;
     protected final Alliance pieceAlliance;
     protected final boolean isFirstMove;
 
-    Piece(final Alliance pieceAlliance, final int piecePosition) {
+    /**
+     * Piece Constructor.
+     * @param pieceType
+     * @param piecePosition
+     * @param pieceAlliance
+     */
+
+    Piece(final PieceType pieceType,
+          final int piecePosition,
+          final Alliance pieceAlliance) {
+        this.pieceType = pieceType;
         this.pieceAlliance = pieceAlliance;
         this.piecePosition = piecePosition;
 
@@ -20,40 +31,120 @@ public abstract class Piece {
         this.isFirstMove = false;
     }
 
+    /**
+     * Returns piece Position
+     * @return
+     */
+
     public int getPiecePosition(){
         return this.piecePosition;
     }
 
+
+    /**
+     * Returns piece alliance
+     * @return
+     */
     public Alliance getPieceAlliance(){
         return this.pieceAlliance;
     }
+
+    /**
+     * Returns if piece first move
+     * @return
+     */
 
     public boolean isFirstMove() {
         return this.isFirstMove;
     }
 
+    /**
+     * Returns the piece type
+     * @return
+     */
+
+    public PieceType getPieceType(){
+        return this.pieceType;
+    }
+
+    /**
+     * Abstract method for calculating legal moves
+     * @param board
+     * @return
+     */
+
     public abstract Collection<Move> calculateLegalMoves(final Board board);
 
+
+    /**
+     * Enum for Piece Types
+     */
     public enum PieceType {
 
-        PAWN("P"),
-        KNIGHT("N"),
-        BISHOP("B"),
-        ROOK("R"),
-        QUEEN("Q"),
-        KING("K");
+        PAWN("P"){
+            @Override
+            public boolean isKing(){
+                return false;
+            }
+        },
+        KNIGHT("N"){
+            @Override
+            public boolean isKing(){
+                return false;
+            }
+        },
+        BISHOP("B"){
+            @Override
+            public boolean isKing(){
+                return false;
+            }
+        },
+        ROOK("R"){
+            @Override
+            public boolean isKing(){
+                return false;
+            }
+        },
+        QUEEN("Q"){
+            @Override
+            public boolean isKing(){
+                return false;
+            }
+        },
+        KING("K"){
+            @Override
+            public boolean isKing(){
+                return true;
+            }
+        };
 
 
        private String pieceName;
+
+
+        /**
+         * Constructor for PieceType
+         * @param pieceName
+         */
 
         PieceType(final String pieceName){
             this.pieceName = pieceName;
         }
 
+        /**
+         * toString method that returns piece name
+         * @return
+         */
         @Override
         public String toString(){
             return this.pieceName;
         }
+
+        /**
+         * Abstract method for checking if piece is King
+         * @return
+         */
+        public abstract boolean isKing();
 
     }
 

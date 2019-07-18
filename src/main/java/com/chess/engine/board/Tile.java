@@ -8,12 +8,9 @@ import java.util.Map;
 
 public abstract class Tile {
 
-    /**
-     * Creates a Protected coordinate variable and a cached map with all tiles on board.
-     */
+
 
     protected final int tileCoordinate;
-
     private static final Map<Integer, EmptyTile> EMPTY_TILES_CACHE = createAllPossibleEmptyTiles();
 
     /**
@@ -67,7 +64,7 @@ public abstract class Tile {
 
 
     /**
-     * Empty tile
+     * Empty tile Class
      */
 
     public static final class EmptyTile extends Tile{
@@ -94,17 +91,28 @@ public abstract class Tile {
     }
 
     /**
-     * Occupied Tile
+     * Occupied Tile Class
      */
 
     public static final class OccupiedTile extends Tile {
 
         private final Piece pieceOnTile;
 
+        /**
+         * Occupied Tile constructor
+         * @param tileCoordinate
+         * @param pieceOnTile
+         */
+
         private OccupiedTile(int tileCoordinate, final Piece pieceOnTile){
             super(tileCoordinate);
             this.pieceOnTile = pieceOnTile;
         }
+
+        /**
+         * toString method that returns lowercase if Alliance is black
+         * @return
+         */
 
         @Override
         public String toString(){

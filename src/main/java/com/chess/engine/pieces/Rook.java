@@ -16,10 +16,22 @@ public class Rook extends Piece {
     private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATES = {-8, -1, 1, 8}; //Creates array of possible movements
 
 
+    /**
+     * Constructor for Rook
+     * @param pieceAlliance
+     * @param piecePosition
+     */
 
     public Rook(Alliance pieceAlliance, int piecePosition) {
-        super(pieceAlliance, piecePosition);
+        super(PieceType.ROOK, piecePosition, pieceAlliance);
     }
+
+
+    /**
+     * Calculates legal moves for Rook
+     * @param board
+     * @return
+     */
 
     @Override
     public Collection<Move> calculateLegalMoves(final Board board) {
@@ -53,15 +65,34 @@ public class Rook extends Piece {
         return ImmutableList.copyOf(legalMoves);
     }
 
+
+    /**
+     * toString method that prints the rook piece type
+     * @return
+     */
     @Override
     public String toString(){
         return PieceType.ROOK.toString();
     }
 
+    /**
+     * calculates if rook is on first column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
+
     private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -1);
     }
 
+
+    /**
+     * Calculates if the rook is on the eighth column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
     private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == 1);
     }

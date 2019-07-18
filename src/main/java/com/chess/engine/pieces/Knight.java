@@ -28,7 +28,7 @@ public class Knight extends Piece {
      * @param pieceAlliance
      */
     public Knight(final Alliance pieceAlliance, final int piecePosition) {
-        super(pieceAlliance, piecePosition);
+        super(PieceType.KNIGHT, piecePosition, pieceAlliance);
     }
 
     /**
@@ -69,24 +69,57 @@ public class Knight extends Piece {
         return ImmutableList.copyOf(legalMoves);
     }
 
+    /**
+     * toString method that returns the Knight Piece Type
+     * @return
+     */
+
     @Override
     public String toString(){
         return PieceType.KNIGHT.toString();
     }
 
+
+    /**
+     * Calculates if Piece is on first column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
     private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -17 || candidateOffset == -10 ||
                 candidateOffset == 6 || candidateOffset == 15);
     }
 
+    /**
+     * Calculates if Piece is on Second column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
+
     private static boolean isSecondColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.SECOND_COLUMN[currentPosition] && (candidateOffset == -10 || candidateOffset == 6);
     }
+
+    /**
+     * Calculates if Piece is on Seventh Column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
 
     private static boolean isSeventhColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.SEVENTH_COLUMN[currentPosition] && (candidateOffset == -6 || candidateOffset == 10);
 
     }
+
+    /**
+     * Calculates if Piece is on eighth column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
 
     private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == -15 || candidateOffset == -6 ||

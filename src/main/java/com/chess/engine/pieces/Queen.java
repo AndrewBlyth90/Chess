@@ -15,11 +15,22 @@ public class Queen extends Piece {
 
     private final static int[] CANDIDATE_MOVE_VECTOR_COORDINATES = {-9, -8, -7, -1, 1, 8, 7, 9}; //Creates array of possible movements
 
+
+    /**
+     * Constructor for QUeen
+     * @param pieceAlliance
+     * @param piecePosition
+     */
     public Queen(Alliance pieceAlliance, int piecePosition) {
-        super(pieceAlliance, piecePosition);
+        super(PieceType.QUEEN, piecePosition, pieceAlliance);
     }
 
 
+    /**
+     * Calculates legal moves for Queen
+     * @param board
+     * @return
+     */
     @Override
     public Collection<Move> calculateLegalMoves(final Board board) {
 
@@ -52,15 +63,34 @@ public class Queen extends Piece {
         return ImmutableList.copyOf(legalMoves);
     }
 
+    /**
+     * toString method that returns the Piece Type
+     * @return
+     */
+
     @Override
     public String toString(){
         return PieceType.QUEEN.toString();
     }
 
+    /**
+     * Calculates if Queen object is on first column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
+
     private static boolean isFirstColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.FIRST_COLUMN[currentPosition] && (candidateOffset == -1 || candidateOffset == -9 || candidateOffset == 7);
     }
 
+
+    /**
+     * Calculates if Queen Object is on Eighth column
+     * @param currentPosition
+     * @param candidateOffset
+     * @return
+     */
     private static boolean isEighthColumnExclusion(final int currentPosition, final int candidateOffset) {
         return BoardUtils.EIGHTH_COLUMN[currentPosition] && (candidateOffset == -7 || candidateOffset == 1 || candidateOffset == 9);
     }
