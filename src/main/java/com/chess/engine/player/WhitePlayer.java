@@ -16,9 +16,9 @@ public class WhitePlayer extends Player{
      * @param blackStandardLegalMoves
      */
 
-    public WhitePlayer(Board board,
-                       Collection<Move> whiteStandardLegalMoves,
-                       Collection<Move> blackStandardLegalMoves) {
+    public WhitePlayer(final Board board,
+                       final Collection<Move> whiteStandardLegalMoves,
+                       final Collection<Move> blackStandardLegalMoves) {
         super(board, whiteStandardLegalMoves, blackStandardLegalMoves);
 
     }

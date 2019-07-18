@@ -2,6 +2,8 @@ package com.chess.engine.board;
 
 import com.chess.engine.pieces.Piece;
 
+import static com.chess.engine.board.Board.*;
+
 public abstract class Move {
 
     final Board board;
@@ -27,6 +29,7 @@ public abstract class Move {
 
     /**
      * Returns the destination coordinate
+     *
      * @return
      */
 
@@ -36,6 +39,7 @@ public abstract class Move {
 
     /**
      * Abstract execute method
+     *
      * @return
      */
 
@@ -55,7 +59,20 @@ public abstract class Move {
 
         @Override
         public Board execute() {
-            return null;
+            final Builder builder = new Builder();
+            for (final Piece piece : this.board.currentPlayer().getActivePieces()) {
+                //TODO hashcode and equals for pieces
+                if (!this.movedPiece.equals(piece)) {
+                    builder.setPiece(piece);
+                }
+            }
+            for (final Piece piece : this.board.currentPlayer().getOpponent().getActivePieces()) {
+                builder.setPiece(piece);
+            }
+            //Move the moved piece!
+            builder.setPiece(null);
+            builder.setMoveMaker(this.board.currentPlayer().getOpponent().getAlliance());
+            return builder.build();
         }
     }
 
