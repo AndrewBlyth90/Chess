@@ -68,6 +68,17 @@ public class Bishop extends Piece {
     }
 
     /**
+     * Method that creates a new Bishop object when movePiece is called.
+     * @param move
+     * @return
+     */
+
+    @Override
+    public Bishop movePiece(Move move) {
+        return new Bishop(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+    }
+
+    /**
      * toString method that returns bishop piece type
      * @return
      */

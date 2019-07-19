@@ -72,6 +72,18 @@ public class King extends Piece {
 
 
     /**
+     * Method that creates a new King object when movePiece is called.
+     * @param move
+     * @return
+     */
+
+    @Override
+    public King movePiece(Move move) {
+        return new King(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+    }
+
+
+    /**
      * toString method that returns King Piece Type
      * @return
      */

@@ -18,6 +18,7 @@ public class Queen extends Piece {
 
     /**
      * Constructor for QUeen
+     *
      * @param pieceAlliance
      * @param piecePosition
      */
@@ -28,6 +29,7 @@ public class Queen extends Piece {
 
     /**
      * Calculates legal moves for Queen
+     *
      * @param board
      * @return
      */
@@ -63,18 +65,34 @@ public class Queen extends Piece {
         return ImmutableList.copyOf(legalMoves);
     }
 
+
     /**
-     * toString method that returns the Piece Type
+     * Method that creates a new Queen object when movePiece is called.
+     *
+     * @param move
      * @return
      */
 
     @Override
-    public String toString(){
+    public Queen movePiece(Move move) {
+        return new Queen(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+    }
+
+
+    /**
+     * toString method that returns the Piece Type
+     *
+     * @return
+     */
+
+    @Override
+    public String toString() {
         return PieceType.QUEEN.toString();
     }
 
     /**
      * Calculates if Queen object is on first column
+     *
      * @param currentPosition
      * @param candidateOffset
      * @return
@@ -87,6 +105,7 @@ public class Queen extends Piece {
 
     /**
      * Calculates if Queen Object is on Eighth column
+     *
      * @param currentPosition
      * @param candidateOffset
      * @return

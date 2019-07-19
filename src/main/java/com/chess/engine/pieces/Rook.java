@@ -65,6 +65,18 @@ public class Rook extends Piece {
         return ImmutableList.copyOf(legalMoves);
     }
 
+    /**
+     * Method that creates a new Rook object when movePiece is called.
+     * @param move
+     * @return
+     */
+
+    @Override
+    public Rook movePiece(Move move) {
+        return new Rook(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+    }
+
+
 
     /**
      * toString method that prints the rook piece type

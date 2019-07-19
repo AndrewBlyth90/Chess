@@ -69,6 +69,19 @@ public class Knight extends Piece {
         return ImmutableList.copyOf(legalMoves);
     }
 
+
+    /**
+     * Method that creates a new Knight object when movePiece is called.
+     * @param move
+     * @return
+     */
+
+    @Override
+    public Knight movePiece(Move move) {
+        return new Knight(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+    }
+
+
     /**
      * toString method that returns the Knight Piece Type
      * @return

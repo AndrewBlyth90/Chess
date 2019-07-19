@@ -94,6 +94,19 @@ public class Pawn extends Piece {
         return ImmutableList.copyOf(legalMoves);
     }
 
+
+    /**
+     * Method that creates a new Pawn object when movePiece is called.
+     * @param move
+     * @return
+     */
+
+    @Override
+    public Pawn movePiece(Move move) {
+        return new Pawn(move.getMovedPiece().getPieceAlliance(), move.getDestinationCoordinate());
+    }
+
+
     /**
      * toString method that returns the Pawn Piece Type
      * @return
