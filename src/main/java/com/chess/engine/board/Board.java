@@ -255,7 +255,7 @@ public class Board {
          */
 
         public Builder setMoveMaker(final Alliance alliance) {
-            this.nextMoveMaker = nextMoveMaker;
+            this.nextMoveMaker = alliance;
             return this;
         }
 

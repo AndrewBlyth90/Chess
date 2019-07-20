@@ -5,7 +5,7 @@ import com.chess.engine.board.Board;
 import com.chess.engine.board.Move;
 import com.chess.engine.pieces.*;
 import com.google.common.collect.ImmutableList;
-import com.sun.tools.classfile.RuntimeTypeAnnotations_attribute;
+import com.google.common.collect.Iterables;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,7 +31,7 @@ public abstract class Player {
            final Collection<Move> opponentMoves) {
         this.board = board;
         this.playerKing = establishKing();
-        this.legalMoves = legalMoves;
+        this.legalMoves = ImmutableList.copyOf(Iterables.concat(legalMoves, calculateKingCastles(legalMoves, opponentMoves)));
         //Checks if one of the legal attack moves would attack king
         this.isInCheck = !Player.calculateAttacksOnTile(this.playerKing.getPiecePosition(), opponentMoves).isEmpty();
     }
