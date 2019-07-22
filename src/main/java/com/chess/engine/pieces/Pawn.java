@@ -58,8 +58,8 @@ public class Pawn extends Piece {
                 legalMoves.add(new Move.MajorMove(board, this, candidateDestinationCoordinate));  // Adds move to list if unnoccupied
 
             } else if (currentCandidateOffset == 16 && this.isFirstMove() && //Checks if tile 2 away & is first move &
-                    (BoardUtils.SECOND_ROW[this.piecePosition] && this.getPieceAlliance().isBlack()) || //Checks if piece  is on second row and is black OR
-                    (BoardUtils.SEVENTH_ROW[this.piecePosition] && this.getPieceAlliance().isWhite())) { //Checks if piece is on seventh row and is white.
+                    (BoardUtils.SEVENTH_RANK[this.piecePosition] && this.getPieceAlliance().isBlack()) || //Checks if piece  is on second row and is black OR
+                    (BoardUtils.SECOND_RANK[this.piecePosition] && this.getPieceAlliance().isWhite())) { //Checks if piece is on seventh row and is white.
                 final int behindCandidateDestinationCoordinate = this.piecePosition + (this.pieceAlliance.getDirection() * 8); //Passes destination -1)
                 if (!board.getTile(behindCandidateDestinationCoordinate).isTileOccupied() && //Checks both destination and -1 to destination are both empty.
                         !board.getTile(candidateDestinationCoordinate).isTileOccupied()) {
