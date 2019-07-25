@@ -65,20 +65,28 @@ public class BlackPlayer extends Player {
     }
 
 
+    /**
+     * Calculates and returns a Collection of Moves that are classified as King Castles. A king castle is a special move in chess where both the
+     * king and the castle can move on the same turn.
+     * @param playerLegals
+     * @param opponentLegals
+     * @return
+     */
+
     @Override
     public Collection<Move> calculateKingCastles(final Collection<Move> playerLegals,
                                                  final Collection<Move> opponentLegals) {
-        final List<Move> kingCastles = new ArrayList<Move>();
+        final List<Move> kingCastles = new ArrayList<Move>(); //Creates new array list
 
-        if (this.playerKing.isFirstMove() && !this.isInCheck()) {
+        if (this.playerKing.isFirstMove() && !this.isInCheck()) { //Checks if first move AND not in check
             //Black king side castle
-            if (!this.board.getTile(5).isTileOccupied() && !this.board.getTile(6).isTileOccupied()) {
-                final Tile rookTile = this.board.getTile(7);
-                if (rookTile.isTileOccupied() && rookTile.getPiece().isFirstMove()) {
-                    if (Player.calculateAttacksOnTile(5, opponentLegals).isEmpty() &&
+            if (!this.board.getTile(5).isTileOccupied() && !this.board.getTile(6).isTileOccupied()) { //Checks tiles are empty
+                final Tile rookTile = this.board.getTile(7); //Assigns rook tile
+                if (rookTile.isTileOccupied() && rookTile.getPiece().isFirstMove()) { //checks rook tile is occupied AND first move
+                    if (Player.calculateAttacksOnTile(5, opponentLegals).isEmpty() && //Checks no attacks can be placed on tiles
                             Player.calculateAttacksOnTile(6, opponentLegals).isEmpty() &&
                             rookTile.getPiece().getPieceType().isRook()) {
-                        kingCastles.add(new KingSideCastleMove(this.board, this.playerKing, 6, (Rook) rookTile.getPiece(), rookTile.getTileCoordinate(), 5));
+                        kingCastles.add(new KingSideCastleMove(this.board, this.playerKing, 6, (Rook) rookTile.getPiece(), rookTile.getTileCoordinate(), 5)); //Switches piecess
                     }
                 }
             }
@@ -96,6 +104,6 @@ public class BlackPlayer extends Player {
         }
 
 
-        return ImmutableList.copyOf(kingCastles);
+        return ImmutableList.copyOf(kingCastles); //Returns list
     }
 }

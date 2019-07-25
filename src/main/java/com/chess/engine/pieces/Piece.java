@@ -24,15 +24,20 @@ public abstract class Piece {
 
     Piece(final PieceType pieceType,
           final int piecePosition,
-          final Alliance pieceAlliance) {
+          final Alliance pieceAlliance,
+          final boolean isFirstMove) {
         this.pieceType = pieceType;
         this.pieceAlliance = pieceAlliance;
         this.piecePosition = piecePosition;
-
-        //TODO MORE WORK
-        this.isFirstMove = false;
+        this.isFirstMove = isFirstMove;
         this.cachedHashCode = computeHashCode();
     }
+
+
+    /**
+     * Calculates hashcode for piece
+     * @return
+     */
 
     private int computeHashCode() {
         int result = pieceType.hashCode();
@@ -42,6 +47,12 @@ public abstract class Piece {
         return result;
     }
 
+
+    /**
+     * Overrides equals method to equate two pieces
+     * @param other
+     * @return
+     */
     @Override
     public boolean equals(final Object other) {
         if (this == other) {
@@ -54,6 +65,11 @@ public abstract class Piece {
         return piecePosition == otherPiece.getPiecePosition() && pieceType == ((Piece) other).getPieceType() &&
                 pieceAlliance == otherPiece.getPieceAlliance() && isFirstMove == otherPiece.isFirstMove();
     }
+
+    /**
+     * Overrides hashcode
+     * @return
+     */
 
     @Override
     public int hashCode() {

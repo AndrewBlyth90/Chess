@@ -9,7 +9,6 @@ import java.util.Map;
 public abstract class Tile {
 
 
-
     protected final int tileCoordinate;
     private static final Map<Integer, EmptyTile> EMPTY_TILES_CACHE = createAllPossibleEmptyTiles();
 
@@ -21,7 +20,7 @@ public abstract class Tile {
 
         final Map<Integer, EmptyTile> emptyTileMap = new HashMap();
 
-        for(int i = 0; i < BoardUtils.NUM_TILES; i++) {
+        for (int i = 0; i < BoardUtils.NUM_TILES; i++) {
             emptyTileMap.put(i, new EmptyTile(i));
         }
 
@@ -29,28 +28,26 @@ public abstract class Tile {
     }
 
     /**
-     *
+     * If piece returns null will create a new occupied tile based on given coord and piece. Otherwise returns
+     * empty tile coord.
      * @param tileCoordinate
      * @param piece
      * @return Tile
-     *
-     * If piece returns null will create a new occupied tile based on given coord and piece. Otherwise returns
-     * empty tile coord.
-     *
      */
 
-    public static Tile createTile(final int tileCoordinate, final Piece piece){
+    public static Tile createTile(final int tileCoordinate, final Piece piece) {
         return piece != null ? new OccupiedTile(tileCoordinate, piece) : EMPTY_TILES_CACHE.get(tileCoordinate);
     }
 
 
     /**
      * Tile constructor.
+     *
      * @param tileCoordinate
      */
 
 
-    private Tile(final int tileCoordinate){
+    private Tile(final int tileCoordinate) {
         this.tileCoordinate = tileCoordinate;
     }
 
@@ -62,7 +59,7 @@ public abstract class Tile {
 
     public abstract Piece getPiece();
 
-    public int getTileCoordinate(){
+    public int getTileCoordinate() {
         return this.tileCoordinate;
     }
 
@@ -71,20 +68,20 @@ public abstract class Tile {
      * Empty tile Class
      */
 
-    public static final class EmptyTile extends Tile{
+    public static final class EmptyTile extends Tile {
 
-       private EmptyTile(final int coordinate){
+        private EmptyTile(final int coordinate) {
             super(coordinate);
         }
 
 
         @Override
         public String toString() {
-           return "-";
+            return "-";
         }
 
         @Override
-        public boolean isTileOccupied(){
+        public boolean isTileOccupied() {
             return false;
         }
 
@@ -104,33 +101,35 @@ public abstract class Tile {
 
         /**
          * Occupied Tile constructor
+         *
          * @param tileCoordinate
          * @param pieceOnTile
          */
 
-        private OccupiedTile(int tileCoordinate, final Piece pieceOnTile){
+        private OccupiedTile(int tileCoordinate, final Piece pieceOnTile) {
             super(tileCoordinate);
             this.pieceOnTile = pieceOnTile;
         }
 
         /**
          * toString method that returns lowercase if Alliance is black
+         *
          * @return
          */
 
         @Override
-        public String toString(){
+        public String toString() {
             return getPiece().getPieceAlliance().isBlack() ? getPiece().toString().toLowerCase() :
-                   getPiece().toString();
+                    getPiece().toString();
         }
 
         @Override
-        public boolean isTileOccupied(){
+        public boolean isTileOccupied() {
             return true;
         }
 
         @Override
-        public Piece getPiece(){
+        public Piece getPiece() {
             return this.pieceOnTile;
         }
     }

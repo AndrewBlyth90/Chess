@@ -4,6 +4,7 @@ import com.chess.engine.Alliance;
 import com.chess.engine.board.Board;
 import com.chess.engine.board.BoardUtils;
 import com.chess.engine.board.Move;
+import com.chess.engine.pieces.*;
 import com.google.common.collect.ImmutableList;
 
 
@@ -28,7 +29,11 @@ public class Pawn extends Piece {
      */
 
     public Pawn(final Alliance pieceAlliance, final int piecePosition) {
-        super(PieceType.PAWN, piecePosition, pieceAlliance);
+        super(PieceType.PAWN, piecePosition, pieceAlliance, true);
+    }
+
+    public Pawn(final Alliance pieceAlliance, final int piecePosition, final boolean isFirstMove) {
+        super(PieceType.PAWN, piecePosition, pieceAlliance, isFirstMove);
     }
 
 
@@ -55,15 +60,14 @@ public class Pawn extends Piece {
 
             if (currentCandidateOffset == 8 && !board.getTile(candidateDestinationCoordinate).isTileOccupied()) { //Checks if tile 1 away is unoccupied
                 //TODO MORE WORK HERE!! (Deal with promotions)
-                legalMoves.add(new Move.MajorMove(board, this, candidateDestinationCoordinate));  // Adds move to list if unnoccupied
-
+                legalMoves.add(new Move.MajorMove(board, this, candidateDestinationCoordinate));  // Adds move to list if unoccupied
             } else if (currentCandidateOffset == 16 && this.isFirstMove() && //Checks if tile 2 away & is first move &
-                    (BoardUtils.SEVENTH_RANK[this.piecePosition] && this.getPieceAlliance().isBlack()) || //Checks if piece  is on second row and is black OR
-                    (BoardUtils.SECOND_RANK[this.piecePosition] && this.getPieceAlliance().isWhite())) { //Checks if piece is on seventh row and is white.
+                    ((BoardUtils.SEVENTH_RANK[this.piecePosition] && this.getPieceAlliance().isBlack()) || //Checks if piece  is on second row and is black OR
+                    (BoardUtils.SECOND_RANK[this.piecePosition] && this.getPieceAlliance().isWhite())))   { //Checks if piece is on seventh row and is white.
                 final int behindCandidateDestinationCoordinate = this.piecePosition + (this.pieceAlliance.getDirection() * 8); //Passes destination -1)
                 if (!board.getTile(behindCandidateDestinationCoordinate).isTileOccupied() && //Checks both destination and -1 to destination are both empty.
                         !board.getTile(candidateDestinationCoordinate).isTileOccupied()) {
-                    legalMoves.add(new Move.MajorMove(board, this, candidateDestinationCoordinate));
+                    legalMoves.add(new Move.PawnJump(board, this, candidateDestinationCoordinate));
                 }
             } else if (currentCandidateOffset == 7 && // If going for attack move
 
@@ -74,7 +78,7 @@ public class Pawn extends Piece {
                     final Piece pieceOnCandidate = board.getTile(candidateDestinationCoordinate).getPiece();
                     if (this.pieceAlliance != pieceOnCandidate.getPieceAlliance()) { //Checks target piece is of different alliance
                         //TODO more work here
-                        legalMoves.add(new Move.MajorMove(board, this, candidateDestinationCoordinate)); //adds move to list
+                        legalMoves.add(new Move.PawnAttackMove(board, this, candidateDestinationCoordinate, pieceOnCandidate)); //adds move to list
                     }
                 }
             } else if (currentCandidateOffset == 9 && //if going for attack move

@@ -213,6 +213,11 @@ public class Board {
 
     }
 
+    /**
+     * Method that returns an Iterable of all legal moves.
+     * @return
+     */
+
     public Iterable<Move> getAllLegalMoves() {
         return Iterables.unmodifiableIterable(Iterables.concat(this.whitePlayer.getLegalMoves(), this.blackPlayer.getLegalMoves()));
     }

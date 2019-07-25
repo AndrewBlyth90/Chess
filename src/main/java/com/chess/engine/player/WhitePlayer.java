@@ -64,6 +64,16 @@ public class WhitePlayer extends Player {
         return this.board.blackPlayer();
     }
 
+    /**
+     * Calculates and returns a Collection of Moves that are classified as King Castles. A king castle is a special move in chess where both the
+     * king and the castle can move on the same turn.
+     * @param playerLegals
+     * @param opponentLegals
+     * @return
+     */
+
+    //Check BlackPlayer for annotation on below method.
+
     @Override
     public Collection<Move> calculateKingCastles(final Collection<Move> playerLegals,
                                                  final Collection<Move> opponentLegals) {
