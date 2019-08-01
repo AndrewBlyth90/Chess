@@ -7,11 +7,11 @@ import com.chess.engine.board.Move;
 import com.chess.engine.board.Tile;
 import com.chess.engine.pieces.Piece;
 import com.chess.engine.player.MoveTransition;
+import com.chess.engine.player.ai.MiniMax;
+import com.chess.engine.player.ai.MoveStrategy;
 import com.google.common.collect.Lists;
-
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -20,27 +20,29 @@ import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
+import java.util.*;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 import static javax.swing.SwingUtilities.isLeftMouseButton;
 import static javax.swing.SwingUtilities.isRightMouseButton;
 
-public class Table {
+public class Table extends Observable {
 
     private final JFrame gameFrame;
     private final GameHistoryPanel gameHistoryPanel;
     private final TakenPiecesPanel takenPiecesPanel;
     private final BoardPanel boardPanel;
     private final MoveLog moveLog;
+    private final GameSetup gameSetup;
     private Board chessBoard;
 
     private Tile sourceTile;
     private Tile destinationTile;
     private Piece humanMovedPiece;
     private BoardDirection boardDirection;
+
+    private Move computerMove;
 
     private boolean highlightLegalMoves;
 
@@ -52,11 +54,12 @@ public class Table {
     private final Color lightTileColour = Color.decode("#FFFACD");
     private final Color darkTileColour = Color.decode("#593E1A");
 
+    private static final Table INSTANCE = new Table();
 
     /**
      * Constructor for table
      */
-    public Table() {
+    private Table() {
         this.gameFrame = new JFrame("JChess");
         this.gameFrame.setLayout(new BorderLayout());
         final JMenuBar tableMenuBar = createTableMenuBar();
@@ -67,6 +70,8 @@ public class Table {
         this.takenPiecesPanel = new TakenPiecesPanel();
         this.boardPanel = new BoardPanel();
         this.moveLog = new MoveLog();
+        this.addObserver(new TableGameAIWatcher());
+        this.gameSetup = new GameSetup(this.gameFrame, true);
         this.boardDirection = BoardDirection.NORMAL;
         this.highlightLegalMoves = false;
         this.gameFrame.add(this.takenPiecesPanel, BorderLayout.WEST);
@@ -75,8 +80,29 @@ public class Table {
         this.gameFrame.setVisible(true);
     }
 
+    public static Table get() {
+        return INSTANCE;
+    }
+
+    public void show(){
+        Table.get().getMoveLog().clear();
+        Table.get().getGameHistoryPanel().redo(chessBoard, Table.get().getMoveLog());
+        Table.get().getTakenPiecesPanel().redo(Table.get().getMoveLog());
+        Table.get().getBoardPanel().drawBoard(Table.get().getGameBoard());
+    }
+
+    private GameSetup getGameSetup() {
+        return this.gameSetup;
+    }
+
+    private Board getGameBoard() {
+        return this.chessBoard;
+    }
+
+
     /**
      * Creates menu bar on GUI
+     *
      * @return
      */
 
@@ -84,25 +110,19 @@ public class Table {
         final JMenuBar tableMenuBar = new JMenuBar();
         tableMenuBar.add(createFileMenu());
         tableMenuBar.add(createPreferencesMenu());
+        tableMenuBar.add(createOptionsMenu());
         return tableMenuBar;
 
     }
 
     /**
      * Creates the File option on the GUI
+     *
      * @return
      */
 
     private JMenu createFileMenu() {
         final JMenu fileMenu = new JMenu("File");
-        final JMenuItem openPGN = new JMenuItem("Load PGN File");
-        openPGN.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                System.out.println("Open up that pgn file!");
-            }
-        });
-        fileMenu.add(openPGN);
-
         final JMenuItem exitMenuItem = new JMenuItem("Exit");
         exitMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(ActionEvent e) {
@@ -115,16 +135,17 @@ public class Table {
 
     /**
      * Creates the Preferences menu on the GUI
+     *
      * @return
      */
 
-    private JMenu createPreferencesMenu(){
+    private JMenu createPreferencesMenu() {
         final JMenu preferencesMenu = new JMenu("Preferences");
         final JMenuItem flipBoardMenuItem = new JMenuItem("Flip Board");
         flipBoardMenuItem.addActionListener(new ActionListener() {
             public void actionPerformed(final ActionEvent e) {
-            boardDirection = boardDirection.opposite();
-            boardPanel.drawBoard(chessBoard);
+                boardDirection = boardDirection.opposite();
+                boardPanel.drawBoard(chessBoard);
             }
         });
         preferencesMenu.add(flipBoardMenuItem);
@@ -140,6 +161,119 @@ public class Table {
         preferencesMenu.add(legalMoveHighlighterCheckbox);
         return preferencesMenu;
     }
+
+    private JMenu createOptionsMenu() {
+        final JMenu optionsMenu = new JMenu("Options");
+
+        final JMenuItem setupGameMenuItem = new JMenuItem("Setup Game");
+        setupGameMenuItem.addActionListener(new ActionListener() {
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                Table.get().getGameSetup().promptUser();
+                Table.get().setupUpdate(Table.get().getGameSetup());
+            }
+        });
+
+        optionsMenu.add(setupGameMenuItem);
+        return optionsMenu;
+
+    }
+
+    private void setupUpdate(final GameSetup gameSetup) {
+        setChanged();
+        notifyObservers(gameSetup);
+
+    }
+
+    private static class TableGameAIWatcher implements Observer {
+
+        @Override
+        public void update(final Observable o, final Object arg) {
+            if (Table.get().getGameSetup().isAIPlayer(Table.get().getGameBoard().currentPlayer()) &&
+                    !Table.get().getGameBoard().currentPlayer().isInCheckMate() &&
+                    !Table.get().getGameBoard().currentPlayer().isInStaleMate()) {
+                //create AI Thread
+                //execute AI work
+                final AIThinkTank thinkTank = new AIThinkTank();
+                thinkTank.execute();
+            }
+            if (Table.get().getGameBoard().currentPlayer().isInCheckMate()) {
+                System.out.println("Game Over, " + Table.get().getGameBoard().currentPlayer() + "is in checkmate");
+            }
+            if (Table.get().getGameBoard().currentPlayer().isInStaleMate()) {
+                System.out.println("Game Over, " + Table.get().getGameBoard().currentPlayer() + "is in stalemate");
+            }
+        }
+    }
+
+    private static class AIThinkTank extends SwingWorker<Move, String> {
+        private AIThinkTank() {
+
+        }
+
+        @Override
+        protected Move doInBackground() throws Exception {
+            final MoveStrategy miniMax = new MiniMax(4);
+            final Move bestMove = miniMax.execute(Table.get().getGameBoard());
+
+            return bestMove;
+        }
+
+        @Override
+        public void done() {
+            try {
+                final Move bestMove = get();
+
+                Table.get().updateComputerMove(bestMove);
+                Table.get().updateGameBoard(Table.get().getGameBoard().currentPlayer().makeMove(bestMove).getTransitionBoard());
+                Table.get().getMoveLog().addMove(bestMove);
+                Table.get().getGameHistoryPanel().redo(Table.get().getGameBoard(), Table.get().getMoveLog());
+                Table.get().getTakenPiecesPanel().redo(Table.get().getMoveLog());
+                Table.get().getBoardPanel().drawBoard(Table.get().getGameBoard());
+                Table.get().moveMadeUpdate(PlayerType.COMPUTER);
+
+
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } catch (ExecutionException e) {
+                e.printStackTrace();
+            }
+
+        }
+
+    }
+
+    private void updateGameBoard(final Board board) {
+        this.chessBoard = board;
+    }
+
+    public void updateComputerMove(final Move move) {
+        this.computerMove = move;
+    }
+
+    private MoveLog getMoveLog(){
+        return this.moveLog;
+    }
+
+    private GameHistoryPanel getGameHistoryPanel(){
+        return this.gameHistoryPanel;
+    }
+
+    private TakenPiecesPanel getTakenPiecesPanel(){
+        return this.takenPiecesPanel;
+    }
+
+    private BoardPanel getBoardPanel(){
+        return this.boardPanel;
+    }
+
+    private void moveMadeUpdate(final PlayerType playerType){
+
+        setChanged();
+        notifyObservers(playerType);
+
+    }
+
 
     /**
      * Enum to deal with flipping the board.
@@ -178,8 +312,13 @@ public class Table {
 
     }
 
+    enum PlayerType {
+        HUMAN,
+        COMPUTER
+    }
 
-    public static class MoveLog{
+
+    public static class MoveLog {
 
         private final List<Move> moves;
 
@@ -187,7 +326,7 @@ public class Table {
             this.moves = new ArrayList<Move>();
         }
 
-        public List<Move> getMoves(){
+        public List<Move> getMoves() {
             return this.moves;
         }
 
@@ -195,26 +334,26 @@ public class Table {
             this.moves.add(move);
         }
 
-        public int size(){
+        public int size() {
             return this.moves.size();
         }
 
-        public void clear(){
+        public void clear() {
             this.moves.clear();
         }
 
-        public Move removeMove(int index){
+        public Move removeMove(int index) {
             return this.moves.remove(index);
         }
 
-        public boolean removeMove(final Move move){
+        public boolean removeMove(final Move move) {
             return this.moves.remove(move);
         }
     }
 
     /**
      * Creates tiles on GUI
-      */
+     */
 
     private class BoardPanel extends JPanel {
 
@@ -238,6 +377,7 @@ public class Table {
 
         /**
          * Method that visualises the chess board. First removes old board and then creates new one.
+         *
          * @param board
          */
 
@@ -252,16 +392,13 @@ public class Table {
         }
 
 
-
-
-
-
         private class TilePanel extends JPanel {
 
             private final int tileId;
 
             /**
              * Constructor for TilePanel. Adds Mouse Listener Event to Tile
+             *
              * @param boardPanel
              * @param tileId
              */
@@ -303,6 +440,9 @@ public class Table {
                                 public void run() {
                                     gameHistoryPanel.redo(chessBoard, moveLog);
                                     takenPiecesPanel.redo(moveLog);
+                                    if(gameSetup.isAIPlayer(chessBoard.currentPlayer())){
+                                        Table.get().moveMadeUpdate(PlayerType.HUMAN);
+                                    }
                                     boardPanel.drawBoard(chessBoard);
                                 }
                             });
@@ -331,6 +471,7 @@ public class Table {
 
             /**
              * Method that creates tile
+             *
              * @param board
              */
 
@@ -344,6 +485,7 @@ public class Table {
 
             /**
              * Method that sets image of piece on tile
+             *
              * @param board
              */
 
@@ -363,16 +505,17 @@ public class Table {
 
             /**
              * Method that highlights possible legal moves with a green dot.
+             *
              * @param board
              */
 
-            private void highLightLegals(final Board board){
-                if(highlightLegalMoves){
-                    for(final Move move : pieceLegalMoves(board)){
-                        if(move.getDestinationCoordinate() == this.tileId){
-                            try{
+            private void highLightLegals(final Board board) {
+                if (highlightLegalMoves) {
+                    for (final Move move : pieceLegalMoves(board)) {
+                        if (move.getDestinationCoordinate() == this.tileId) {
+                            try {
                                 add(new JLabel(new ImageIcon(ImageIO.read(new File("art/misc/green_dot.png")))));
-                            } catch(Exception e){
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                         }
@@ -382,12 +525,13 @@ public class Table {
 
             /**
              * Method that returns a collection on Moves that are legal moves for a selected piece.
+             *
              * @param board
              * @return
              */
 
             private Collection<Move> pieceLegalMoves(final Board board) {
-                if(humanMovedPiece != null && humanMovedPiece.getPieceAlliance() == board.currentPlayer().getAlliance()){
+                if (humanMovedPiece != null && humanMovedPiece.getPieceAlliance() == board.currentPlayer().getAlliance()) {
                     return humanMovedPiece.calculateLegalMoves(board);
                 }
                 return Collections.emptyList();
